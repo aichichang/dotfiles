@@ -113,7 +113,7 @@ alias kns=kubens
 alias ks=kubeseal
 
 # Git
-alias prunebranch="git branch --merged | egrep -v "(^\*|master|main|dev)" | xargs git branch -d"
+# alias prunebranch="git branch --merged | egrep -v "(^\*|master|main|dev)" | xargs git branch -d"
 
  if type brew &>/dev/null; then
     FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
