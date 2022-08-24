@@ -1,0 +1,10 @@
+[user]
+	name = aichichang
+[core]
+	excludesfile = ~/.config/.gitignore
+[pull]
+	rebase = true
+[commit]
+  gpgsign = true
+[gpg]
+  program = gpg
