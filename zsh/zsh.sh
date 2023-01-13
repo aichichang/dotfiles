@@ -1,4 +1,3 @@
-
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -9,7 +8,7 @@ export ZSH="/Users/aichi.chang/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="robbyrussell"
+# ZSH_THEME="robbyrussell"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -18,11 +17,11 @@ ZSH_THEME="robbyrussell"
 # ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
 
 # Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
+CASE_SENSITIVE="true"
 
 # Uncomment the following line to use hyphen-insensitive completion.
 # Case-sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
+HYPHEN_INSENSITIVE="true"
 
 # Uncomment the following line to disable bi-weekly auto-update checks.
 # DISABLE_AUTO_UPDATE="true"
@@ -69,10 +68,18 @@ ZSH_THEME="robbyrussell"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git gpg-agent)
+plugins=(
+    git 
+    jsontools 
+    colored-man-pages 
+    command-not-found 
+    rust 
+    zsh-syntax-highlighting
+    yarn-autocompletions
+    zsh-autosuggestions
+)
 
 source $ZSH/oh-my-zsh.sh
-source ~/.nvm/nvm.sh
 
 # User configuration
 
@@ -88,9 +95,9 @@ source ~/.nvm/nvm.sh
 #   export EDITOR='mvim'
 # fi
 
-if [[ -f /usr/local/share/chtf/chtf.sh ]]; then
-    source "/usr/local/share/chtf/chtf.sh"
-fi
+# if [[ -f /usr/local/share/chtf/chtf.sh ]]; then
+#     source "/usr/local/share/chtf/chtf.sh"
+# fi
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -100,57 +107,64 @@ fi
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
 #
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-alias d="cd ~/development"
-alias ls="ls -lrthaG"
 
-# K8s
-alias k=kubectl
-alias kctx=kubectx
-alias kns=kubens
-alias ks=kubeseal
+# Nvm
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 
 # Git
 # alias prunebranch="git branch --merged | egrep -v "(^\*|master|main|dev)" | xargs git branch -d"
 
- if type brew &>/dev/null; then
+git_clean_remote() {
+  git fetch -p && \
+  for branch in $(git for-each-ref --format '%(refname) %(upstream:track)' refs/heads | awk '$2 == "[gone]" {sub("refs/heads/", "", $1); print $1}'); 
+    do git branch -d $branch; 
+  done
+}
+
+# Github GPG Signing
+export GPG_TTY=$(tty)
+
+# zsh-completions
+if type brew &>/dev/null; then
     FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
 
     autoload -Uz compinit
     compinit
-  fi
+fi
 
-# Node / NVM
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+# SSH Agent
+if [ -z "$SSH_AUTH_SOCK" ]; then
+   # Check for a currently running instance of the agent
+   RUNNING_AGENT="`ps -ax | grep 'ssh-agent -s' | grep -v grep | wc -l | tr -d '[:space:]'`"
+   if [ "$RUNNING_AGENT" = "0" ]; then
+        # Launch a new instance of the agent
+        ssh-agent -s &> .ssh/ssh-agent
+   fi
+   eval `cat .ssh/ssh-agent`
+fi
 
-# Load .nvmrc when found in directory
-autoload -U add-zsh-hook
+# Puppeterr
+export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+export PUPPETEER_EXECUTABLE_PATH=`which chromium`
 
-load-nvmrc() {
-    local node_version="$(nvm version)"
-    local nvmrc_path="$(nvm_find_nvmrc)"
-    
-    if [ -n "$nvmrc_path" ]; then
-        local nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
-    
-    if [ "$nvmrc_node_version" = "N/A" ]; then
-        nvm install
-    elif [ "$nvmrc_node_version" != "$node_version" ]; then
-        nvm use
-    fi
-    elif [ "$node_version" != "$(nvm version default)" ]; then
-        echo "Reverting to nvm default version"
-        nvm use default
-    fi
-}
+# Alacritty
+fpath+=${ZDOTDIR:-~}/.zsh_functions
 
-add-zsh-hook chpwd load-nvmrc
-load-nvmrc
-export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
+# Golang
+export GOPATH=$HOME/go # or somewhere else
+# export GOROOT=/usr/local/opt/go/libexec
+export PATH=$PATH:$GOPATH/bin
+export PATH=$PATH:$GOROOT/bin
 
-# Add bash script
-export PATH=$HOME/.bin:$PATH
+# zsh-syntax-highlighting
+HB_CNF_HANDLER="$(brew --repository)/Library/Taps/homebrew/homebrew-command-not-found/handler.sh"
+if [ -f "$HB_CNF_HANDLER" ]; then
+source "$HB_CNF_HANDLER";
+fi
 
+## Secrets
+source $HOME/.dotfiles/secrets
+
+eval "$(starship init zsh)"
