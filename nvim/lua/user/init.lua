@@ -5,7 +5,6 @@
 -- normal format is "key = value". These also handle array like data structures
 -- where a value with no key simply has an implicit numeric key
 local config = {
-
 	-- Configure AstroNvim updates
 	updater = {
 		remote = "origin", -- remote to use
@@ -24,10 +23,8 @@ local config = {
 		--   ["remote3"] = "github_user", -- GitHub user assume AstroNvim fork
 		-- },
 	},
-
 	-- Set colorscheme to use
 	colorscheme = "nord",
-
 	-- Add highlight groups in any theme
 	highlights = {
 		-- init = { -- this table overrides highlights in all themes
@@ -37,7 +34,6 @@ local config = {
 		--   Normal = { bg = "#000000" },
 		-- },
 	},
-
 	-- set vim options here (vim.<first_key>.<second_key> = value)
 	options = {
 		opt = {
@@ -57,7 +53,6 @@ local config = {
 			status_diagnostics_enabled = true, -- enable diagnostics in statusline
 			icons_enabled = true, -- disable icons in the UI (disable if no nerd font is available, requires :PackerSync after changing)
 			ui_notifications_enabled = true, -- disable notifications when toggling UI elements
-			copilot_no_tab_map = true,
 		},
 	},
 	-- If you need more control, you can use the function()...end notation
@@ -84,7 +79,6 @@ local config = {
 		"    ██  ██ ██  ██  ██  ██ ██  ██  ██",
 		"    ██   ████   ████   ██ ██      ██",
 	},
-
 	-- Default theme configuration
 	default_theme = {
 		-- Modify the color palette for the default theme
@@ -128,15 +122,14 @@ local config = {
 			["which-key"] = true,
 		},
 	},
-
 	-- Diagnostics configuration (for vim.diagnostics.config({...})) when diagnostics are on
 	diagnostics = {
 		virtual_text = true,
 		underline = true,
 	},
-
 	-- Extend LSP configuration
 	lsp = {
+		skip_setup = { "rust_analyzer" }, -- will be set up by rust-tools
 		-- enable servers that you already have installed without mason
 		servers = {
 			-- "pyright"
@@ -150,6 +143,8 @@ local config = {
 				},
 				ignore_filetypes = { -- disable format on save for specified filetypes
 					-- "python",
+					"yaml",
+					"yml",
 				},
 			},
 			disabled = { -- disable formatting capabilities for the listed language servers
@@ -189,13 +184,24 @@ local config = {
 					},
 				},
 			},
+			denols = {
+				init_options = {
+					enable = true,
+					lint = true,
+					unstable = true,
+				},
+				root_dir = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc"),
+			},
 			tsserver = {
 				on_attach = function(client, bufnr) client.server_capabilities.documentFormattingProvider = false end,
+				root_dir = require("lspconfig.util").root_pattern("package.json", "tsconfig.json"),
+				single_file_support = false,
+			},
+			eslint_d = {
+				root_dir = require("lspconfig.util").root_pattern("package.json", ".eslintrc.json", ".eslintrc.js"),
 			},
 		},
-		skip_setup = { "rust_analyzer" }, -- will be set up by rust-tools
 	},
-
 	-- Mapping data with "desc" stored directly by vim.keymap.set().
 	--
 	-- Please use this mappings table to set keyboard mapping since this is the
@@ -218,7 +224,6 @@ local config = {
 			-- ["<esc>"] = false,
 		},
 	},
-
 	-- Configure plugins
 	plugins = {
 		init = {
@@ -257,74 +262,100 @@ local config = {
 					local rt = require "rust-tools"
 
 					rt.setup {
-						-- server = astronvim.lsp.server_settings "rust_analyzer",
-						server = {
-							cargo = {
-								loadOutDirsFromCheck = true,
-							},
-							checkOnSave = {
-								command = "clippy",
-							},
-							experimental = {
-								procAttrMacros = true,
-							},
-							workspace = {
-								symbol = {
-									search = {
-										kind = "all_symbols",
-									},
-								},
-							},
-							-- on_attach is a callback called when the language server attachs to the buffer
-							on_attach = function(_, bufnr)
-								-- Hover actions
-								vim.keymap.set("n", "<C-space>", rt.hover_actions.hover_actions, { buffer = bufnr })
-								-- Code action groups
-								vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
-							end,
-							settings = {
-								-- to enable rust-analyzer settings visit:
-								-- https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/user/generated_config.adoc
-								["rust-analyzer"] = {
-									-- enable clippy on save
-									checkOnSave = {
-										command = "clippy",
-									},
-								},
-							},
-						},
+						server = astronvim.lsp.server_settings "rust_analyzer",
+						-- server = {
+						-- 		standalong = true,
+						-- 		cargo = {
+						-- 				loadOutDirsFromCheck = true,
+						-- 		},
+						-- 		checkOnSave = {
+						-- 				command = "clippy",
+						-- 		},
+						-- 		experimental = {
+						-- 				procAttrMacros = true,
+						-- 		},
+						-- 		workspace = {
+						-- 				symbol = {
+						-- 						search = {
+						-- 								kind = "all_symbols",
+						-- 						},
+						-- 				},
+						-- 		},
+						-- 		-- on_attach is a callback called when the language server attachs to the buffer
+						-- 		on_attach = function(_, bufnr)
+						-- 			-- Hover actions
+						-- 			vim.keymap.set("n", "<C-space>", rt.hover_actions.hover_actions, { buffer = bufnr })
+						-- 			-- Code action groups
+						-- 			vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
+						-- 		end,
+						-- },
 						-- dap = {
 						--   adapter = require("rust-tools.dap").get_codelldb_adapter(codelldb_path, liblldb_path),
 						-- },
 						tools = { -- rust-tools options
-							autoSetHints = true,
 							inlay_hints = {
-								show_parameter_hints = false,
-								parameter_hints_prefix = "",
-								other_hints_prefix = "",
+								parameter_hints_prefix = "<= ",
+								other_hints_prefix = "=> ",
 							},
 						},
 					}
 				end,
 			},
+			-- {
+			-- 	"sigmasd/deno-nvim",
+			-- 	after = { "nvim-lspconfig", "mason-lspconfig.nvim" },
+			-- 	config = function()
+			-- 		require("deno-nvim").setup {
+			-- 			server = astronvim.lsp.server_settings "denols",
+			-- 		}
+			-- 	end,
+			-- },
 			{ "ThePrimeagen/vim-be-good" },
-			{ "github/copilot.vim" },
+			{ "APZelos/blamer.nvim" },
 		},
 		-- All other entries override the require("<key>").setup({...}) call for default plugins
+		["indent-o-matic"] = {
+			max_lines = 2048,
+			standard_widths = { 2, 4, 8 },
+			filetype_rust = {
+				standard_widths = { 4 },
+				filetype_lua = {
+					standard_widths = { 4 },
+				},
+			},
+		},
 		["null-ls"] = function(config) -- overrides `require("null-ls").setup(config)`
 			-- config variable is the default configuration table for the setup function call
 			local null_ls = require "null-ls"
-
+			local vale = null_ls.builtins.diagnostics.vale
 			-- Check supported formatters and linters
 			-- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/formatting
 			-- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/diagnostics
 			config.sources = {
-				-- Set a formatter
-				null_ls.builtins.diagnostics.eslint_d,
-				null_ls.builtins.code_actions.eslint_d,
-				null_ls.builtins.formatting.prettier,
+				null_ls.builtins.code_actions.shellcheck,
+				-- Set a linter
+				null_ls.builtins.diagnostics.actionlint,
+				null_ls.builtins.diagnostics.eslint_d.with {
+					condition = function(utils) return utils.root_has_file { "package.json", "eslintrc.js", ".eslintrc.json" } end,
+				},
+				null_ls.builtins.diagnostics.fish,
+				null_ls.builtins.diagnostics.gitlint,
+				null_ls.builtins.diagnostics.markdownlint,
+				null_ls.builtins.diagnostics.shellcheck,
 				null_ls.builtins.diagnostics.stylelint,
+				vale,
+				null_ls.builtins.diagnostics.yamllint,
+				-- Set a formatter
+				null_ls.builtins.formatting.prettier.with {
+					condition = function(utils)
+						return utils.root_has_file { "package.json", ".prettierrc", ".prettierrc.json", ".prettierrc.js" }
+					end,
+				},
 				null_ls.builtins.formatting.stylua,
+				null_ls.builtins.formatting.deno_fmt.with {
+					condition = function(utils) return utils.root_has_file { "deno.jsonc", "deno.json" } end,
+				},
+				null_ls.builtins.formatting.rustfmt,
 			}
 			return config -- return final config table
 		end,
@@ -337,10 +368,40 @@ local config = {
 		},
 		-- use mason-null-ls to configure Formatters/Linter installation for null-ls sources
 		["mason-null-ls"] = { -- overrides `require("mason-null-ls").setup(...)`
-			ensure_installed = { "prettier", "stylua", "eslint_d" },
+			-- ensure_installed = { "prettier", "stylua", "eslint_d", "deno_fmt" },
+			ensure_installed = nil,
+			automatic_installation = true,
+			automatic_setup = false,
+			setup_handlers = {
+				prettier = function()
+					require("null-ls").register(require("null-ls").builtins.formatting.prettier.with {
+						condition = function(utils)
+							return utils.root_has_file "package.json"
+									or utils.root_has_file ".prettierrc"
+									or utils.root_has_file ".prettierrc.json"
+									or utils.root_has_file ".prettierrc.js"
+						end,
+					})
+				end,
+				-- For eslint_d:
+				eslint_d = function()
+					require("null-ls").register(require("null-ls").builtins.diagnostics.eslint_d.with {
+						condition = function(utils)
+							return utils.root_has_file "package.json"
+									or utils.root_has_file ".eslintrc.json"
+									or utils.root_has_file ".eslintrc.js"
+						end,
+					})
+				end,
+				-- For denols:
+				deno_fmt = function()
+					require("null-ls").register(require("null-ls").builtins.formatting.deno_fmt.with {
+						condition = function(utils) return utils.root_has_file "deno.json" or utils.root_has_file "deno.jsonc" end,
+					})
+				end,
+			},
 		},
 	},
-
 	-- LuaSnip Options
 	luasnip = {
 		-- Extend filetypes
@@ -354,7 +415,6 @@ local config = {
 			paths = {},
 		},
 	},
-
 	-- CMP Source Priorities
 	-- modify here the priorities of default cmp sources
 	-- higher value == higher priority
@@ -369,7 +429,6 @@ local config = {
 			path = 250,
 		},
 	},
-
 	-- Modify which-key registration (Use this with mappings table in the above.)
 	["which-key"] = {
 		-- Add bindings which show up as group name
@@ -385,7 +444,6 @@ local config = {
 			},
 		},
 	},
-
 	-- This function is run last and is a good place to configuring
 	-- augroups/autocommands and custom filetypes also this just pure lua so
 	-- anything that doesn't fit in the normal config locations above can go here
@@ -402,8 +460,6 @@ local config = {
 		--     ["~/%.config/foo/.*"] = "fooscript",
 		--   },
 		-- }
-		local copilot_options = { silent = true, expr = true, script = true }
-		vim.api.nvim_set_keymap("i", "<C-a>", "copilot#Accept(<Tab>)", copilot_options)
 	end,
 }
 
