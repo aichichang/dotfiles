@@ -1,4 +1,4 @@
-# Set up a new device
+# Setting up a new device
 
 ## Installation
 - [Warp](https://www.warp.dev/)
