@@ -7,16 +7,16 @@
 local config = {
 	-- Configure AstroNvim updates
 	updater = {
-		remote = "origin", -- remote to use
-		channel = "stable", -- "stable" or "nightly"
-		version = "latest", -- "latest", tag name, or regex search like "v1.*" to only do updates before v2 (STABLE ONLY)
-		branch = "main", -- branch name (NIGHTLY ONLY)
-		commit = nil, -- commit hash (NIGHTLY ONLY)
-		pin_plugins = nil, -- nil, true, false (nil will pin plugins on stable only)
-		skip_prompts = false, -- skip prompts about breaking changes
+		remote = "origin",     -- remote to use
+		channel = "stable",    -- "stable" or "nightly"
+		version = "latest",    -- "latest", tag name, or regex search like "v1.*" to only do updates before v2 (STABLE ONLY)
+		branch = "main",       -- branch name (NIGHTLY ONLY)
+		commit = nil,          -- commit hash (NIGHTLY ONLY)
+		pin_plugins = nil,     -- nil, true, false (nil will pin plugins on stable only)
+		skip_prompts = false,  -- skip prompts about breaking changes
 		show_changelog = true, -- show the changelog after performing an update
-		auto_reload = true, -- automatically reload and sync packer after a successful update
-		auto_quit = false, -- automatically quit the current session after a successful update
+		auto_reload = true,    -- automatically reload and sync packer after a successful update
+		auto_quit = false,     -- automatically quit the current session after a successful update
 		-- remotes = { -- easily add new remotes to track
 		--   ["remote_name"] = "https://remote_url.come/repo.git", -- full remote url
 		--   ["remote2"] = "github_user/repo", -- GitHub user/repo shortcut,
@@ -39,20 +39,20 @@ local config = {
 		opt = {
 			-- set to true or false etc.
 			relativenumber = true, -- sets vim.opt.relativenumber
-			number = true, -- sets vim.opt.number
-			spell = false, -- sets vim.opt.spell
-			signcolumn = "auto", -- sets vim.opt.signcolumn to auto
-			wrap = false, -- sets vim.opt.wrap
+			number = true,         -- sets vim.opt.number
+			spell = false,         -- sets vim.opt.spell
+			signcolumn = "auto",   -- sets vim.opt.signcolumn to auto
+			wrap = false,          -- sets vim.opt.wrap
 		},
 		g = {
-			mapleader = " ", -- sets vim.g.mapleader
-			autoformat_enabled = true, -- enable or disable auto formatting at start (lsp.formatting.format_on_save must be enabled)
-			cmp_enabled = true, -- enable completion at start
-			autopairs_enabled = true, -- enable autopairs at start
-			diagnostics_enabled = true, -- enable diagnostics at start
+			mapleader = " ",                   -- sets vim.g.mapleader
+			autoformat_enabled = true,         -- enable or disable auto formatting at start (lsp.formatting.format_on_save must be enabled)
+			cmp_enabled = true,                -- enable completion at start
+			autopairs_enabled = true,          -- enable autopairs at start
+			diagnostics_enabled = true,        -- enable diagnostics at start
 			status_diagnostics_enabled = true, -- enable diagnostics in statusline
-			icons_enabled = true, -- disable icons in the UI (disable if no nerd font is available, requires :PackerSync after changing)
-			ui_notifications_enabled = true, -- disable notifications when toggling UI elements
+			icons_enabled = true,              -- disable icons in the UI (disable if no nerd font is available, requires :PackerSync after changing)
+			ui_notifications_enabled = true,   -- disable notifications when toggling UI elements
 		},
 	},
 	-- If you need more control, you can use the function()...end notation
@@ -137,14 +137,12 @@ local config = {
 		formatting = {
 			-- control auto formatting on save
 			format_on_save = {
-				enabled = true, -- enable or disable format on save globally
+				enabled = true,     -- enable or disable format on save globally
 				allow_filetypes = { -- enable format on save for specified filetypes only
 					-- "go",
 				},
 				ignore_filetypes = { -- disable format on save for specified filetypes
 					-- "python",
-					"yaml",
-					"yml",
 				},
 			},
 			disabled = { -- disable formatting capabilities for the listed language servers
@@ -173,7 +171,8 @@ local config = {
 		-- Add overrides for LSP server settings, the keys are the name of the server
 		["server-settings"] = {
 			-- example for addings schemas to yamlls
-			yamlls = { -- override table for require("lspconfig").yamlls.setup({...})
+			yamlls = {
+				-- override table for require("lspconfig").yamlls.setup({...})
 				settings = {
 					yaml = {
 						schemas = {
@@ -199,6 +198,9 @@ local config = {
 			},
 			eslint_d = {
 				root_dir = require("lspconfig.util").root_pattern("package.json", ".eslintrc.json", ".eslintrc.js"),
+			},
+			stylelint_lsp = {
+				filetypes = { "scss", "css", "vue" },
 			},
 		},
 	},
@@ -292,7 +294,8 @@ local config = {
 						-- dap = {
 						--   adapter = require("rust-tools.dap").get_codelldb_adapter(codelldb_path, liblldb_path),
 						-- },
-						tools = { -- rust-tools options
+						tools = {
+							-- rust-tools options
 							inlay_hints = {
 								parameter_hints_prefix = "<= ",
 								other_hints_prefix = "=> ",
@@ -319,31 +322,27 @@ local config = {
 			standard_widths = { 2, 4, 8 },
 			filetype_rust = {
 				standard_widths = { 4 },
-				filetype_lua = {
-					standard_widths = { 4 },
-				},
+			},
+			filetype_lua = {
+				standard_widths = { 2 },
 			},
 		},
 		["null-ls"] = function(config) -- overrides `require("null-ls").setup(config)`
 			-- config variable is the default configuration table for the setup function call
 			local null_ls = require "null-ls"
-			local vale = null_ls.builtins.diagnostics.vale
 			-- Check supported formatters and linters
 			-- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/formatting
 			-- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/diagnostics
 			config.sources = {
-				null_ls.builtins.code_actions.shellcheck,
 				-- Set a linter
 				null_ls.builtins.diagnostics.actionlint,
 				null_ls.builtins.diagnostics.eslint_d.with {
 					condition = function(utils) return utils.root_has_file { "package.json", "eslintrc.js", ".eslintrc.json" } end,
 				},
-				null_ls.builtins.diagnostics.fish,
+				-- null_ls.builtins.diagnostics.fish,
 				null_ls.builtins.diagnostics.gitlint,
 				null_ls.builtins.diagnostics.markdownlint,
-				null_ls.builtins.diagnostics.shellcheck,
 				null_ls.builtins.diagnostics.stylelint,
-				vale,
 				null_ls.builtins.diagnostics.yamllint,
 				-- Set a formatter
 				null_ls.builtins.formatting.prettier.with {
@@ -367,40 +366,47 @@ local config = {
 			ensure_installed = { "sumneko_lua", "yamlls" },
 		},
 		-- use mason-null-ls to configure Formatters/Linter installation for null-ls sources
-		["mason-null-ls"] = { -- overrides `require("mason-null-ls").setup(...)`
-			-- ensure_installed = { "prettier", "stylua", "eslint_d", "deno_fmt" },
-			ensure_installed = nil,
-			automatic_installation = true,
-			automatic_setup = false,
-			setup_handlers = {
-				prettier = function()
-					require("null-ls").register(require("null-ls").builtins.formatting.prettier.with {
-						condition = function(utils)
-							return utils.root_has_file "package.json"
-									or utils.root_has_file ".prettierrc"
-									or utils.root_has_file ".prettierrc.json"
-									or utils.root_has_file ".prettierrc.js"
-						end,
-					})
-				end,
-				-- For eslint_d:
-				eslint_d = function()
-					require("null-ls").register(require("null-ls").builtins.diagnostics.eslint_d.with {
-						condition = function(utils)
-							return utils.root_has_file "package.json"
-									or utils.root_has_file ".eslintrc.json"
-									or utils.root_has_file ".eslintrc.js"
-						end,
-					})
-				end,
-				-- For denols:
-				deno_fmt = function()
-					require("null-ls").register(require("null-ls").builtins.formatting.deno_fmt.with {
-						condition = function(utils) return utils.root_has_file "deno.json" or utils.root_has_file "deno.jsonc" end,
-					})
-				end,
-			},
-		},
+		["mason-null-ls"] = function()
+			local null_ls = require "null-ls"
+			local mls = require "mason-null-ls"
+			mls.setup = {
+				-- overrides `require("mason-null-ls").setup(...)`
+				-- ensure_installed = { "prettier", "stylua", "eslint_d", "deno_fmt" },
+				ensure_installed = nil,
+				automatic_installation = true,
+				automatic_setup = false,
+				setup_handlers = {
+					prettier = function()
+						null_ls.register(null_ls.builtins.formatting.prettier.with {
+							condition = function(utils)
+								return utils.root_has_file "package.json"
+										or utils.root_has_file ".prettierrc"
+										or utils.root_has_file ".prettierrc.json"
+										or utils.root_has_file ".prettierrc.js"
+							end,
+						})
+					end,
+					-- For eslint_d:
+					eslint_d = function()
+						null_ls.register(null_ls.builtins.diagnostics.eslint_d.with {
+							condition = function(utils)
+								return utils.root_has_file "package.json"
+										or utils.root_has_file ".eslintrc.json"
+										or utils.root_has_file ".eslintrc.js"
+							end,
+						})
+					end,
+					-- For denols:
+					deno = function()
+						null_ls.register(null_ls.builtins.formatting.deno_fmt.with {
+							condition = function(utils) return utils.root_has_file "deno.json" or utils.root_has_file "deno.jsonc" end,
+						})
+					end,
+				},
+			}
+
+			null_ls.setup()
+		end,
 	},
 	-- LuaSnip Options
 	luasnip = {
