@@ -191,6 +191,11 @@ _G.packer_plugins = {
     path = "/Users/aichi.chang/.local/share/nvim/site/pack/packer/start/rust-tools.nvim",
     url = "https://github.com/simrat39/rust-tools.nvim"
   },
+  ["smart-splits.nvim"] = {
+    loaded = true,
+    path = "/Users/aichi.chang/.local/share/nvim/site/pack/packer/start/smart-splits.nvim",
+    url = "https://github.com/mrjones2014/smart-splits.nvim"
+  },
   ["telescope.nvim"] = {
     loaded = true,
     path = "/Users/aichi.chang/.local/share/nvim/site/pack/packer/start/telescope.nvim",
