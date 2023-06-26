@@ -1,5 +1,6 @@
+# If using Warp terminal, you will need to configure the preference to honor user's prompt settings
 # Inserts a blank line between shell prompts
-add_newline = true
+add_newline = false
 
 # Replace the '❯' symbol in the prompt with '➜'
 [character] # The name of the module we are configuring is 'character'
@@ -28,8 +29,9 @@ time_range = "00:00:00-00:00:00"
 style = 'bold cyan'
 
 [git_branch]
-style = 'bold #fbcbe2'
+style = 'bold #F688CC'
 
 [directory]
-truncation_length	= 1
+truncation_length = 2
 style = 'bold blue'
+
