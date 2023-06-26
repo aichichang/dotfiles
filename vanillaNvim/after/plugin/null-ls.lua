@@ -3,6 +3,7 @@ if not status then return end
 
 local formatting = null_ls.builtins.formatting
 local diagnostics = null_ls.builtins.diagnostics
+local completion = null_ls.builtins.completion
 --[[ local code_actions = null_ls.builtins.code_actions ]]
 local augroup = vim.api.nvim_create_augroup("Format", { clear = true })
 
@@ -10,7 +11,9 @@ null_ls.setup {
   sources = {
     formatting.stylua,
     formatting.prettierd,
+    completion.spell,
     diagnostics.eslint_d,
+    diagnostics.cfn_lint,
     --[[ 		code_actions.eslint_d, ]]
   },
   on_attach = function(client, bufnr)
