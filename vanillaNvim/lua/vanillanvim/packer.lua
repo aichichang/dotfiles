@@ -48,6 +48,8 @@ return require("packer").startup(function(use)
 
 	use("nvim-tree/nvim-web-devicons")
 
+	use("rhysd/git-messenger.vim")
+
 	use({
 		"numToStr/Comment.nvim",
 		config = function()
