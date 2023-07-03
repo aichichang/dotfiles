@@ -160,6 +160,11 @@ _G.packer_plugins = {
     path = "/Users/aichichang/.local/share/nvim/site/pack/packer/start/neo-tree.nvim",
     url = "https://github.com/nvim-neo-tree/neo-tree.nvim"
   },
+  neoformat = {
+    loaded = true,
+    path = "/Users/aichichang/.local/share/nvim/site/pack/packer/start/neoformat",
+    url = "https://github.com/sbdchd/neoformat"
+  },
   ["nui.nvim"] = {
     loaded = true,
     path = "/Users/aichichang/.local/share/nvim/site/pack/packer/start/nui.nvim",

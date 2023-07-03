@@ -50,6 +50,8 @@ return require("packer").startup(function(use)
 
 	use("rhysd/git-messenger.vim")
 
+	use("sbdchd/neoformat")
+
 	use({
 		"numToStr/Comment.nvim",
 		config = function()

@@ -1,7 +1,6 @@
-local status, comments = pcall(require, "Comment.api")
-if not status then
-	return
-end
+local cfg = require("Comment.config"):set(config):get()
+local comments = require("Comment.api")
+local esc = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
 
 vim.g.mapleader = " "
 vim.keymap.set("n", "<leader>c", vim.cmd.Ex)
@@ -52,8 +51,11 @@ vim.keymap.set("n", "<leader><leader>", function()
 	vim.cmd("so")
 end)
 
-vim.keymap.set("n", "<leader>/", function()
-	comments.call("toggle.linewise.current", "g@$")
-end, { expr = true, silent = true })
+if cfg.mappings.basic then
+	vim.keymap.set("x", "<leader>/", function()
+		vim.api.nvim_feedkeys(esc, "nx", false)
+		comments.toggle.blockwise(vim.fn.visualmode())
+	end)
+end
 
 vim.keymap.set("t", "<Esc>", "<C-\\><C-n>")

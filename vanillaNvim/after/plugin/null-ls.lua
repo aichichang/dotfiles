@@ -6,13 +6,19 @@ end
 local formatting = null_ls.builtins.formatting
 local diagnostics = null_ls.builtins.diagnostics
 local completion = null_ls.builtins.completion
---[[ local code_actions = null_ls.builtins.code_actions ]]
-local augroup = vim.api.nvim_create_augroup("Format", { clear = true })
+local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
+--TODO: Not working...
+--[[ local function has_prettier_configured(utils)
+	return utils.root_has_file({ ".prettierrc", ".prettierrc.json", ".prettierrc.js" })
+end ]]
 
 null_ls.setup({
 	sources = {
 		formatting.stylua,
 		formatting.prettierd,
+		--[[ formatting.prettier.with({
+			condition = has_prettier_configured,
+		}), ]]
 		completion.spell,
 		diagnostics.eslint_d,
 		diagnostics.cfn_lint,
@@ -27,6 +33,10 @@ null_ls.setup({
 				callback = function()
 					vim.lsp.buf.format({
 						bufnr = bufnr,
+						async = false,
+						filter = function(client)
+							return client.name == "null-ls"
+						end,
 					})
 				end,
 			})

@@ -6,30 +6,37 @@ end
 
 lsp.preset("recommended")
 
--- (Optional) Configure lua language server for neovim
-lsp.nvim_workspace()
+-- Fix Undefined global 'vim'
+lsp.configure("lua_ls", {
+	cmd = { "lua-language-server" },
+	settings = {
+		Lua = {
+			runtime = {
+				version = "LuaJIT",
+				path = vim.split(package.path, ";"),
+			},
+			diagnostics = {
+				globals = { "vim" },
+			},
+			workspace = {
+				library = {
+					[vim.fn.expand("$VIMRUNTIME/lua")] = true,
+					[vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true,
+				},
+			},
+		},
+	},
+})
 
 lsp.ensure_installed({
 	"tsserver",
 	"eslint",
-	"html",
-	"svelte",
+	"cssls",
 	"gopls",
 	"jsonls",
 	"rust_analyzer",
 	"tflint",
 	"yamlls",
-})
-
--- Fix Undefined global 'vim'
-lsp.configure("lua_ls", {
-	settings = {
-		Lua = {
-			diagnostics = {
-				globals = { "vim" },
-			},
-		},
-	},
 })
 
 local cmp = require("cmp")
@@ -57,6 +64,8 @@ lsp.set_preferences({
 		info = "I",
 	},
 })
+
+local null_ls = require("null-ls")
 
 lsp.on_attach(function(client, bufnr)
 	-- https://github.com/VonHeikemen/lsp-zero.nvim/issues/88
@@ -102,13 +111,14 @@ lsp.on_attach(function(client, bufnr)
 		vim.lsp.buf.signature_help()
 	end, opts)
 
+	-- Custom mapping
 	if capabilities.documentFormattingProvider then
 		bind("n", "<leader>lf", function()
-			vim.lsp.buf.format()
+			vim.lsp.buf.format({ name = "null-ls" })
 		end, opts)
 
 		vim.api.nvim_buf_create_user_command(bufnr, "Format", function()
-			vim.lsp.buf.format()
+			vim.lsp.buf.format({ name = "null-ls" })
 		end, { desc = "Format file with LSP" })
 		local autoformat = lsp.formatting.format_on_save
 		local filetype = vim.api.nvim_buf_get_option(bufnr, "filetype")
@@ -117,10 +127,8 @@ lsp.on_attach(function(client, bufnr)
 			autoformat.enabled
 			and (tbl_isempty(autoformat.allow_filetypes or {}) or tbl_contains(autoformat.allow_filetypes, filetype))
 			and (
-				tbl_isempty(autoformat.ignore_filetypes or {}) or not tbl_contains(
-					autoformat.ignore_filetypes,
-					filetype
-				)
+				not tbl_isempty(autoformat.ignore_filetypes or {})
+				or not tbl_contains(autoformat.ignore_filetypes, filetype)
 			)
 		then
 			local autocmd_group = "auto_format_" .. bufnr
@@ -130,7 +138,7 @@ lsp.on_attach(function(client, bufnr)
 				buffer = bufnr,
 				desc = "Auto format buffer " .. bufnr .. " before save",
 			})
-			bind("n", "<leader>uf", function()
+			bind("n", "<leader>taf", function()
 				vim.ui.toggle_autoformat()
 			end, opts)
 		end
@@ -154,8 +162,7 @@ lsp.setup()
 
 require("rust-tools").setup({ server = rust_lsp })
 
--- vim.cmd [[autocmd BufWritePre * lua vim.lsp.buf.format()]]
-
 vim.diagnostic.config({
 	virtual_text = true,
+	underline = true,
 })

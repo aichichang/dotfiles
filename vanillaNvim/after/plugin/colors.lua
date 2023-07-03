@@ -10,4 +10,3 @@ function SetColor(color)
 end
 
 SetColor()
-
