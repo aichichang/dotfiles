@@ -90,6 +90,11 @@ _G.packer_plugins = {
     path = "/Users/aichichang/.local/share/nvim/site/pack/packer/start/ale",
     url = "https://github.com/dense-analysis/ale"
   },
+  ["blamer.nvim"] = {
+    loaded = true,
+    path = "/Users/aichichang/.local/share/nvim/site/pack/packer/start/blamer.nvim",
+    url = "https://github.com/APZelos/blamer.nvim"
+  },
   ["cmp-buffer"] = {
     loaded = true,
     path = "/Users/aichichang/.local/share/nvim/site/pack/packer/start/cmp-buffer",

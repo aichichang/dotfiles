@@ -52,6 +52,8 @@ return require("packer").startup(function(use)
 
 	use("sbdchd/neoformat")
 
+	use("APZelos/blamer.nvim")
+
 	use({
 		"numToStr/Comment.nvim",
 		config = function()
