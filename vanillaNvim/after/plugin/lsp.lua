@@ -45,9 +45,17 @@ local cmp_mappings = lsp.defaults.cmp_mappings({
 	["<C-p>"] = cmp.mapping.select_prev_item(cmp_select),
 	["<C-n>"] = cmp.mapping.select_next_item(cmp_select),
 	["<C-y>"] = cmp.mapping.confirm({ select = true }),
+	["<C-S-f>"] = cmp.mapping.scroll_docs(-4),
+	["<C-f>"] = cmp.mapping.scroll_docs(4),
 	["<C-Space>"] = cmp.mapping.complete(),
+	["<C-e>"] = cmp.mapping.close(),
+	["<CR>"] = cmp.mapping.confirm({
+		behavior = cmp.ConfirmBehavior.Insert,
+		select = true,
+	}),
 })
 
+-- Remove tab mappings as this is override by Github Copilot
 cmp_mappings["<Tab>"] = nil
 cmp_mappings["<S-Tab>"] = nil
 
