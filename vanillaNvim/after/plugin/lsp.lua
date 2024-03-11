@@ -36,7 +36,7 @@ lsp.ensure_installed({
 	"jsonls",
 	"rust_analyzer",
 	"tflint",
-	"yamlls",
+	-- "yamlls",
 })
 
 local cmp = require("cmp")
@@ -61,16 +61,6 @@ cmp_mappings["<S-Tab>"] = nil
 
 lsp.setup_nvim_cmp({
 	mapping = cmp_mappings,
-})
-
-lsp.set_preferences({
-	suggest_lsp_servers = false,
-	sign_icons = {
-		error = "E",
-		warn = "W",
-		hint = "H",
-		info = "I",
-	},
 })
 
 local null_ls = require("null-ls")
@@ -172,9 +162,17 @@ require("rust-tools").setup({ server = rust_lsp })
 
 vim.diagnostic.config({
 	virtual_text = true,
-	underline = true,
+	underline = false,
 	float = {
 		source = "always",
 		border = "single",
+	},
+	signs = {
+    text = {
+      [vim.diagnostic.severity.ERROR] = '✘',
+      [vim.diagnostic.severity.WARN] = '▲',
+      [vim.diagnostic.severity.HINT] = '⚑',
+      [vim.diagnostic.severity.INFO] = '»',
+    }
 	},
 })

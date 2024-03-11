@@ -54,6 +54,8 @@ return require("packer").startup(function(use)
 
 	use("APZelos/blamer.nvim")
 
+	use("github/copilot.vim")
+
 	use({
 		"numToStr/Comment.nvim",
 		config = function()
