@@ -1,11 +1,17 @@
 [user]
 	name = aichichang
-[core]
-	excludesfile = ~/.config/.gitignore
 [pull]
 	rebase = true
+[push]
+	default = simple
 [commit]
-	template = ~/.git/.gitcommit.txt
-        gpgsign = true
-[gpg]
-  	program = gpg
+  program = gpg
+  gpgsign = true
+  template = ~/.git/.gitcommit.txt
+[core]
+  #hooksPath = /Users/aichichang/.git-hooks
+  excludesfile = ~/.config/.gitignore
+	editor = nvim
+[alias]
+  fixup = "!git log -n 50 --pretty=format:'%h %s' --no-merges | fzf | cut -c -7 | xargs -o git commit --fixup"
+  autosquash = "!git rebase --autosquash -i master"
